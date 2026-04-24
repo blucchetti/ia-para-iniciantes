@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA do Zero — Página de Vendas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #05080f;
+    --surface: #0a0f1e;
+    --surface2: #0f1628;
+    --border: rgba(255,255,255,0.06);
+    --accent: #22d3ee;
+    --accent2: #67e8f9;
+    --accent-dim: #0e7490;
+    --accent-glow: rgba(34,211,238,0.25);
+    --indigo: #6366f1;
+    --gold: #f0c060;
+    --green: #4ade80;
+    --text: #f0f4f8;
+    --muted: #7a8aaa;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.25); color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 30px; }
+  .section { padding: 80px 0; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 5vw, 40px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+  .highlight { color: var(--accent); }
+  .gold { color: var(--gold); }
+  .divider { width: 48px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--indigo)); border-radius: 2px; margin: 24px 0; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 100px 24px 80px; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(34,211,238,0.15) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(99,102,241,0.1) 0%, transparent 60%); }
+  .hero-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%); }
+  .hero > * { position: relative; z-index: 1; }
+
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.25); color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: 1px; padding: 8px 18px; border-radius: 30px; margin-bottom: 32px; animation: fadeDown 0.6s ease both; }
+  .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(42px, 7vw, 76px); font-weight: 800; line-height: 1.0; margin-bottom: 24px; animation: fadeDown 0.6s 0.1s ease both; }
+  .hero-title .line2 { background: linear-gradient(135deg, var(--accent), var(--indigo)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: clamp(16px, 2.5vw, 20px); color: var(--muted); max-width: 560px; margin: 0 auto 40px; animation: fadeDown 0.6s 0.2s ease both; }
+  .hero-cta { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: fadeDown 0.6s 0.3s ease both; }
+
+  .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--accent), var(--indigo)); color: white; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; padding: 18px 40px; border-radius: 12px; text-decoration: none; border: none; cursor: pointer; box-shadow: 0 0 40px var(--accent-glow); transition: transform 0.2s, box-shadow 0.2s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 60px var(--accent-glow); }
+  .hero-guarantee { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+
+  .hero-stats { display: flex; gap: 40px; justify-content: center; margin-top: 60px; padding-top: 60px; border-top: 1px solid var(--border); animation: fadeDown 0.6s 0.4s ease both; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--indigo)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
+  .stat-label { font-size: 13px; color: var(--muted); }
+
+  /* PARA QUEM NÃO É */
+  .pain { background: var(--surface); }
+  .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+  .pain-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+  .pain-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .pain-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .pain-text strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 15px; }
+
+  /* SOLUÇÃO */
+  .solution-box { background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(99,102,241,0.05)); border: 1px solid rgba(34,211,238,0.2); border-radius: 20px; padding: 40px; margin-top: 40px; }
+  .solution-intro { font-size: 18px; line-height: 1.7; margin-bottom: 20px; }
+
+  /* BENEFÍCIOS */
+  .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 40px; }
+  .benefit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; transition: border-color 0.2s, transform 0.2s; }
+  .benefit-card:hover { border-color: rgba(34,211,238,0.35); transform: translateY(-2px); }
+  .benefit-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+  .benefit-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .benefit-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* CONTEÚDO */
+  .content-section { background: var(--surface); }
+  .parts-list { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+  .part-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; display: flex; gap: 16px; align-items: center; }
+  .part-num { width: 44px; height: 44px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--indigo)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; color: white; }
+  .part-info { flex: 1; }
+  .part-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .part-desc { font-size: 13px; color: var(--muted); }
+  .part-count { font-size: 12px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+  .bonus-box { background: linear-gradient(135deg, rgba(240,192,96,0.08), rgba(240,192,96,0.03)); border: 1px solid rgba(240,192,96,0.25); border-radius: var(--radius); padding: 24px; margin-top: 12px; display: flex; gap: 16px; align-items: center; }
+  .bonus-tag { background: var(--gold); color: #000; font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+  .bonus-info .part-name { color: var(--gold); }
+
+  /* PARA QUEM É */
+  .for-who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 40px; }
+  .for-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; gap: 12px; align-items: flex-start; }
+  .check { width: 24px; height: 24px; flex-shrink: 0; background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-top: 2px; }
+  .for-text { font-size: 14px; line-height: 1.5; }
+  .for-text strong { display: block; margin-bottom: 2px; }
+
+  /* GARANTIA */
+  .guarantee-section { background: var(--surface); }
+  .guarantee-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 40px; display: flex; gap: 32px; align-items: center; margin-top: 40px; }
+  .guarantee-icon { font-size: 72px; flex-shrink: 0; }
+  .guarantee-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+  .guarantee-text { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+  /* PREÇO */
+  .price-section { text-align: center; }
+  .price-card { background: var(--surface); border: 1px solid rgba(34,211,238,0.25); border-radius: 24px; padding: 48px 40px; max-width: 480px; margin: 40px auto 0; position: relative; overflow: hidden; }
+  .price-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--indigo)); }
+  .price-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .price-old { font-size: 18px; color: var(--muted); text-decoration: line-through; margin-bottom: 4px; }
+  .price-new { font-family: 'Syne', sans-serif; font-size: 64px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--indigo)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 8px; }
+  .price-installment { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+  .price-includes { text-align: left; border-top: 1px solid var(--border); padding-top: 24px; margin-bottom: 32px; }
+  .price-includes-title { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .price-item { display: flex; gap: 10px; align-items: center; font-size: 14px; margin-bottom: 10px; }
+  .price-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .btn-cta { display: block; width: 100%; background: linear-gradient(135deg, var(--accent), var(--indigo)); color: white; font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; padding: 18px; border-radius: 12px; text-align: center; text-decoration: none; border: none; cursor: pointer; box-shadow: 0 0 40px var(--accent-glow); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 16px; }
+  .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 0 60px var(--accent-glow); }
+  .price-safe { font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  /* COMBO BOX */
+  .combo-box { background: linear-gradient(135deg, rgba(240,192,96,0.08), rgba(240,192,96,0.03)); border: 1px solid rgba(240,192,96,0.3); border-radius: 20px; padding: 32px; max-width: 480px; margin: 20px auto 0; text-align: center; }
+  .combo-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--gold); margin-bottom: 8px; }
+  .combo-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+  .combo-price { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
+  .combo-economy { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .btn-combo { display: block; width: 100%; background: linear-gradient(135deg, #f0c060, #d97706); color: #000; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; border: none; cursor: pointer; transition: transform 0.2s; }
+  .btn-combo:hover { transform: translateY(-2px); }
+
+  /* FAQ */
+  .faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .faq-q { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; font-size: 15px; user-select: none; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-arrow { font-size: 18px; transition: transform 0.3s; color: var(--accent); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; font-size: 14px; color: var(--muted); line-height: 1.7; padding: 0 24px; }
+  .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 20px; }
+
+  /* FOOTER CTA */
+  .footer-cta { background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(99,102,241,0.06)); border-top: 1px solid var(--border); text-align: center; padding: 80px 24px; }
+  .footer-cta p { color: var(--muted); font-size: 16px; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+  /* COPY SECTION */
+  .copy-section { background: var(--surface2); border-top: 1px solid var(--border); padding: 60px 0; }
+  .copy-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin-bottom: 20px; }
+  .copy-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .copy-label { font-size: 11px; background: var(--surface2); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; color: var(--muted); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; }
+  .copy-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; font-size: 14px; line-height: 1.7; color: var(--muted); white-space: pre-wrap; word-break: break-word; margin: 16px 0; font-family: monospace; }
+  .copy-btn { background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.25); color: var(--accent); font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+  .copy-btn:hover { background: rgba(34,211,238,0.2); }
+  .copy-btn.copied { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); color: var(--green); }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    .pain-grid, .benefits-grid, .for-who-grid { grid-template-columns: 1fr; }
+    .guarantee-box { flex-direction: column; text-align: center; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-badge">🚀 Guia completo para iniciantes em IA</div>
+  <h1 class="hero-title">
+    IA do Zero<br>
+    <span class="line2">Guia Completo</span>
+  </h1>
+  <p class="hero-sub">Do zero ao produtivo em 30 dias — sem precisar saber nada de tecnologia. 10 ferramentas gratuitas, 20 usos práticos e um plano para criar o hábito.</p>
+  <div class="hero-cta">
+    <a href="#preco" class="btn-primary">Quero meu acesso agora →</a>
+    <span class="hero-guarantee">🔒 Garantia de 7 dias • Acesso imediato</span>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">10</span><span class="stat-label">Ferramentas gratuitas</span></div>
+    <div class="stat"><span class="stat-num">20</span><span class="stat-label">Usos práticos</span></div>
+    <div class="stat"><span class="stat-num">30</span><span class="stat-label">Dias de plano</span></div>
+    <div class="stat"><span class="stat-num">30</span><span class="stat-label">Termos no glossário</span></div>
+  </div>
+</section>
+
+<!-- DOR -->
+<section class="section pain">
+  <div class="container">
+    <div class="tag">Você se identifica?</div>
+    <h2 class="section-title" style="margin-top:16px">Todo mundo fala de IA.<br><span class="highlight">Mas ninguém te ensina a usar.</span></h2>
+    <div class="divider"></div>
+    <div class="pain-grid">
+      <div class="pain-item">
+        <span class="pain-icon">😕</span>
+        <div class="pain-text"><strong>Nunca abriu o ChatGPT</strong>Ouviu falar mas ficou com medo de parecer idiota por não saber usar. Ficou para depois — e o depois nunca veio.</div>
+      </div>
+      <div class="pain-item">
+        <span class="pain-icon">😤</span>
+        <div class="pain-text"><strong>Tentou e não entendeu</strong>Abriu, fez uma pergunta, achou a resposta estranha e fechou. Concluiu que "não é para mim" — mas o problema era o prompt.</div>
+      </div>
+      <div class="pain-item">
+        <span class="pain-icon">😰</span>
+        <div class="pain-text"><strong>Medo de ficar para trás</strong>Vê colegas e concorrentes usando IA e sentindo que estão produzindo mais. Sabe que precisa aprender, mas não sabe por onde.</div>
+      </div>
+      <div class="pain-item">
+        <span class="pain-icon">🤯</span>
+        <div class="pain-text"><strong>Muita informação, pouca prática</strong>Vídeos no YouTube, artigos, posts no LinkedIn — muita teoria mas ninguém entrega um passo a passo claro para o dia a dia.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUÇÃO -->
+<section class="section">
+  <div class="container">
+    <div class="tag">A solução</div>
+    <h2 class="section-title" style="margin-top:16px">Um guia prático, simples<br>e <span class="highlight">direto ao ponto</span></h2>
+    <div class="divider"></div>
+    <div class="solution-box">
+      <p class="solution-intro">Sem jargões técnicos. Sem teoria desnecessária. Só o que você precisa para <strong>começar a usar IA hoje</strong> — e sentir resultado na primeira semana.</p>
+      <p style="color:var(--muted); font-size:15px; line-height:1.8;">Este guia foi construído pensando em quem nunca usou IA. Cada capítulo responde uma pergunta real: o que é, onde acessar, como usar e o que fazer quando não funciona. Com um plano de 30 dias, você cria o hábito de forma gradual e consistente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFÍCIOS -->
+<section class="section" style="background:var(--surface);">
+  <div class="container">
+    <div class="tag">O que você ganha</div>
+    <h2 class="section-title" style="margin-top:16px">Resultados que você <span class="highlight">sente na primeira semana</span></h2>
+    <div class="divider"></div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <span class="benefit-icon">🚀</span>
+        <div class="benefit-title">Começa do zero mesmo</div>
+        <p class="benefit-desc">Não precisa saber nada de tecnologia. O guia parte do básico absoluto e evolui no seu ritmo.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">🛠️</span>
+        <div class="benefit-title">10 ferramentas gratuitas</div>
+        <p class="benefit-desc">Saiba exatamente qual ferramenta usar para cada situação — com link direto e guia de uso.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">📅</span>
+        <div class="benefit-title">Plano de 30 dias</div>
+        <p class="benefit-desc">Uma tarefa por dia para criar o hábito de usar IA. Simples, progressivo e sem pressão.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">⚡</span>
+        <div class="benefit-title">20 usos práticos prontos</div>
+        <p class="benefit-desc">Do trabalho à vida pessoal — exemplos reais com prompts prontos para copiar e usar.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">🚫</span>
+        <div class="benefit-title">Evite os erros comuns</div>
+        <p class="benefit-desc">Os 10 erros que fazem a IA parecer inútil — e como resolver cada um antes de cometê-los.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">📖</span>
+        <div class="benefit-title">Glossário completo</div>
+        <p class="benefit-desc">30 termos de IA explicados em linguagem simples. Consulte sempre que aparecer uma palavra desconhecida.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEÚDO -->
+<section class="section content-section">
+  <div class="container">
+    <div class="tag">O que está dentro</div>
+    <h2 class="section-title" style="margin-top:16px">Tudo que você precisa<br><span class="highlight">em um único guia</span></h2>
+    <div class="divider"></div>
+    <div class="parts-list">
+      <div class="part-item">
+        <div class="part-num">01</div>
+        <div class="part-info">
+          <div class="part-name">🧠 Entendendo a IA sem complicação</div>
+          <div class="part-desc">O que a IA faz, o que ela não faz e como pensar nela do jeito certo — sem mitos</div>
+        </div>
+      </div>
+      <div class="part-item">
+        <div class="part-num">02</div>
+        <div class="part-info">
+          <div class="part-name">🛠️ As 10 Melhores Ferramentas Gratuitas</div>
+          <div class="part-desc">ChatGPT, Gemini, Copilot, Claude, Canva IA e mais 5 — com link e melhor uso de cada</div>
+        </div>
+        <div class="part-count">10 ferramentas</div>
+      </div>
+      <div class="part-item">
+        <div class="part-num">03</div>
+        <div class="part-info">
+          <div class="part-name">📅 Seus Primeiros 30 Dias com IA</div>
+          <div class="part-desc">Plano semana a semana com desafios diários para criar o hábito de vez por todas</div>
+        </div>
+        <div class="part-count">30 desafios</div>
+      </div>
+      <div class="part-item">
+        <div class="part-num">04</div>
+        <div class="part-info">
+          <div class="part-name">⚡ 20 Usos Práticos para o Dia a Dia</div>
+          <div class="part-desc">Do trabalho à vida pessoal — exemplos reais com prompts prontos para aplicar hoje</div>
+        </div>
+        <div class="part-count">20 usos</div>
+      </div>
+      <div class="part-item">
+        <div class="part-num">05</div>
+        <div class="part-info">
+          <div class="part-name">⚠️ 10 Erros Comuns e Como Evitar</div>
+          <div class="part-desc">O que faz a IA parecer inútil para a maioria — e a solução para cada problema</div>
+        </div>
+        <div class="part-count">10 soluções</div>
+      </div>
+      <div class="bonus-box">
+        <span class="bonus-tag">🎁 BÔNUS</span>
+        <div class="bonus-info">
+          <div class="part-name">Glossário de IA: 30 Termos que Você Precisa Conhecer</div>
+          <div class="part-desc" style="color:var(--muted); font-size:13px; margin-top:4px">Consulte sempre que aparecer uma palavra desconhecida — explicado em linguagem simples</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARA QUEM É -->
+<section class="section">
+  <div class="container">
+    <div class="tag">Para quem é</div>
+    <h2 class="section-title" style="margin-top:16px">Este guia é pra você se…</h2>
+    <div class="divider"></div>
+    <div class="for-who-grid">
+      <div class="for-card">
+        <div class="check">✓</div>
+        <div class="for-text"><strong>Nunca usou IA na vida</strong>Quer começar do zero com um guia claro, sem julgamentos e sem termos técnicos complicados</div>
+      </div>
+      <div class="for-card">
+        <div class="check">✓</div>
+        <div class="for-text"><strong>Tentou mas não conseguiu resultado</strong>Usou uma vez, achou confuso e desistiu — este guia vai mostrar onde você errou e como corrigir</div>
+      </div>
+      <div class="for-card">
+        <div class="check">✓</div>
+        <div class="for-text"><strong>Profissional que quer se atualizar</strong>Sabe que IA vai impactar sua área e quer aprender antes de ser obrigado — na hora certa</div>
+      </div>
+      <div class="for-card">
+        <div class="check">✓</div>
+        <div class="for-text"><strong>Qualquer pessoa curiosa</strong>Que ouve falar de IA em todo lugar e quer finalmente entender o que é e como usar no dia a dia</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GARANTIA -->
+<section class="section guarantee-section">
+  <div class="container">
+    <div class="tag">Risco zero</div>
+    <h2 class="section-title" style="margin-top:16px">Garantia incondicional de <span class="highlight">7 dias</span></h2>
+    <div class="divider"></div>
+    <div class="guarantee-box">
+      <div class="guarantee-icon">🛡️</div>
+      <div>
+        <div class="guarantee-title">Não gostou? Devolvemos 100%</div>
+        <p class="guarantee-text">Se por qualquer motivo você não ficar satisfeito com o guia nos primeiros 7 dias após a compra, basta entrar em contato e devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia. O risco é todo nosso.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PREÇO -->
+<section class="section price-section" id="preco">
+  <div class="container">
+    <div class="tag" style="margin:0 auto 16px;">Investimento</div>
+    <h2 class="section-title">Menos que uma pizza.<br><span class="highlight">Mais que um curso de R$500.</span></h2>
+    <div class="divider" style="margin:24px auto;"></div>
+
+    <div class="price-card">
+      <div class="price-label">Acesso vitalício — pague uma vez</div>
+      <div class="price-old">De R$ 97,00</div>
+      <div class="price-new">R$37</div>
+      <div class="price-installment">ou 2x de R$ 19,90 sem juros</div>
+      <div class="price-includes">
+        <div class="price-includes-title">O que está incluído</div>
+        <div class="price-item"><span class="dot"></span>Guia completo para iniciantes em PDF</div>
+        <div class="price-item"><span class="dot"></span>10 ferramentas gratuitas com guia de uso</div>
+        <div class="price-item"><span class="dot"></span>Plano de 30 dias com desafios diários</div>
+        <div class="price-item"><span class="dot"></span>20 usos práticos com prompts prontos</div>
+        <div class="price-item"><span class="dot"></span>10 erros comuns e como evitar cada um</div>
+        <div class="price-item"><span class="dot"></span>Bônus: Glossário com 30 termos de IA</div>
+        <div class="price-item"><span class="dot"></span>Garantia de 7 dias com reembolso total</div>
+      </div>
+      <a href="#" class="btn-cta">Quero meu acesso agora →</a>
+      <div class="price-safe">🔒 Compra 100% segura via Hotmart</div>
+    </div>
+
+    <!-- COMBO -->
+    <div class="combo-box">
+      <div class="combo-title">🔥 Oferta Especial — Leve os 2 ebooks</div>
+      <div class="combo-desc">Junte este guia com o <strong>50 Prompts Profissionais</strong> e tenha o pacote completo de IA — do zero ao avançado.</div>
+      <div class="combo-price">R$57</div>
+      <div class="combo-economy">Economia de R$17 — em vez de R$74 separados</div>
+      <a href="#" class="btn-combo">Quero o Pacote Completo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" style="background:var(--surface);">
+  <div class="container">
+    <div class="tag">Dúvidas frequentes</div>
+    <h2 class="section-title" style="margin-top:16px">Perguntas e respostas</h2>
+    <div class="divider"></div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Preciso saber de tecnologia para usar este guia? <span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Não. Este guia foi criado especificamente para quem não tem nenhum conhecimento técnico. A linguagem é simples, os exemplos são práticos e o passo a passo é claro. Se você sabe usar um celular, consegue usar as ferramentas deste guia.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Qual a diferença entre este guia e o "50 Prompts Profissionais"? <span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Este guia (IA do Zero) é para quem nunca usou IA ou está começando. Ele explica o que é, como funciona e como dar os primeiros passos. O "50 Prompts" é para quem já usa IA mas quer extrair resultados melhores com prompts mais eficazes. São complementares — por isso existe o combo.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">As ferramentas ensinadas são mesmo gratuitas? <span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Sim. Todas as 10 ferramentas apresentadas têm plano gratuito. Algumas oferecem versões pagas com mais recursos, mas o que é ensinado no guia funciona 100% nos planos gratuitos. Você não precisa gastar nada além deste guia.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Como recebo o material após a compra? <span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Imediatamente após a confirmação do pagamento, você recebe acesso ao PDF na plataforma Hotmart e também por e-mail. Acesso 100% digital e instantâneo — não precisa esperar nada chegar pelo correio.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Quanto tempo preciso dedicar por dia? <span class="faq-arrow">↓</span></div>
+        <div class="faq-a">O plano de 30 dias foi desenhado para ser leve — cada desafio diário leva entre 10 e 20 minutos. Você pode encaixar no intervalo do almoço, antes de dormir ou em qualquer momento do dia. O importante é a consistência, não a quantidade de tempo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<div class="footer-cta">
+  <div class="container">
+    <h2 class="section-title">Pronto para finalmente <span class="highlight">usar IA de verdade?</span></h2>
+    <p>Guia completo. Acesso imediato. Garantia de 7 dias. Sem risco nenhum.</p>
+    <a href="#preco" class="btn-primary">Quero meu acesso agora →</a>
+  </div>
+</div>
+
+<!-- COPY PARA HOTMART -->
+<section class="copy-section">
+  <div class="container">
+    <div class="tag" style="margin-bottom:24px;">📋 Textos prontos para cadastrar na Hotmart</div>
+
+    <div class="copy-box">
+      <div class="copy-title">Título do produto <span class="copy-label">Campo obrigatório</span></div>
+      <div class="copy-content" id="c1">IA do Zero: O Guia Completo para Começar a Usar Inteligência Artificial Hoje</div>
+      <button class="copy-btn" onclick="cp('c1',this)">Copiar título</button>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-title">Subtítulo <span class="copy-label">Campo opcional</span></div>
+      <div class="copy-content" id="c2">Do zero ao produtivo em 30 dias — sem precisar saber nada de tecnologia</div>
+      <button class="copy-btn" onclick="cp('c2',this)">Copiar subtítulo</button>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-title">Descrição completa <span class="copy-label">Página de vendas</span></div>
+      <div class="copy-content" id="c3">Você quer usar IA mas não sabe por onde começar?
+
+Talvez já tenha ouvido falar em ChatGPT mas nunca abriu. Ou abriu, ficou perdido e fechou. Ou usa de vez em quando mas sente que poderia aproveitar muito mais.
+
+Este guia foi feito exatamente para você.
+
+Em linguagem simples, sem jargões técnicos e com exemplos práticos do dia a dia, você vai aprender tudo que precisa para usar Inteligência Artificial com confiança — a partir de hoje.
+
+📦 O QUE VOCÊ RECEBE:
+🧠 Parte 1 — Entendendo a IA sem complicação
+🛠️ Parte 2 — As 10 Melhores Ferramentas Gratuitas
+📅 Parte 3 — Plano de 30 Dias com IA
+⚡ Parte 4 — 20 Usos Práticos para o Dia a Dia
+⚠️ Parte 5 — 10 Erros Comuns e Como Evitar
+🎁 Bônus: Glossário com 30 Termos de IA
+
+✅ PDF com acesso imediato • Garantia de 7 dias</div>
+      <button class="copy-btn" onclick="cp('c3',this)">Copiar descrição</button>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-title">Bullets de benefícios <span class="copy-label">Checkout</span></div>
+      <div class="copy-content" id="c4">• Aprenda a usar IA do zero — sem saber nada de tecnologia
+• 10 ferramentas gratuitas com guia de uso de cada uma
+• Plano de 30 dias para criar o hábito de forma gradual
+• 20 usos práticos com prompts prontos para hoje
+• Evite os 10 erros que fazem a IA parecer inútil
+• Bônus: Glossário com 30 termos explicados
+• Acesso vitalício — pague uma vez, use para sempre
+• Garantia de 7 dias com reembolso total</div>
+      <button class="copy-btn" onclick="cp('c4',this)">Copiar bullets</button>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-title">Palavras-chave <span class="copy-label">SEO Hotmart</span></div>
+      <div class="copy-content" id="c5">inteligência artificial iniciantes, como usar chatgpt, ia para iniciantes, guia ia, ferramentas ia gratis, chatgpt do zero, gemini google, aprender ia, tecnologia para iniciantes, ia no trabalho</div>
+      <button class="copy-btn" onclick="cp('c5',this)">Copiar palavras-chave</button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  function cp(id, btn) {
+    const text = document.getElementById(id).innerText;
+    const orig = btn.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
